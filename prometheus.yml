@@ -1,13 +1,18 @@
 global:
   scrape_interval:     5s # By default, scrape targets every 5 seconds.
 scrape_configs:
-  - job_name: 'sd_configs'
+  - job_name: prometheus
+    static_configs:
+    - targets: ['localhost:9090']
+  - job_name: 'staging_sd_configs'
     ec2_sd_configs:
      - region: eu-west-1
        port: 9095
+     - region: eu-west-1
+       port: 9100
     relabel_configs:
      - source_labels: [__meta_ec2_tag_Environment]
        regex: staging
        action: keep
-     - source_labels: [__meta_ec2_tag_Name]
+     - source_labels: [__meta_ec2_tag_Hostname]
        target_label: instance
