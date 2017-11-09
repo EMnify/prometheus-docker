@@ -40,9 +40,9 @@ scrape_configs:
        regex: '(.*)'
        target_label: __address__
        replacement: '${1}:9095'
-     - source_labels: [__meta_ec2_private_ip]
+     - source_labels: [__meta_ec2_tag_Name]
        regex: '(.*)'
-       target_label: __address__
+       target_label: instance
        replacement: '${1}:9095'
      - source_labels: [__meta_ec2_instance_id]
        target_label: instance_id
