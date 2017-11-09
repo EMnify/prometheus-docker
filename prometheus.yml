@@ -4,15 +4,55 @@ scrape_configs:
   - job_name: prometheus
     static_configs:
     - targets: ['localhost:9090']
-  - job_name: staging
+  - job_name: node
     ec2_sd_configs:
-     - region: eu-west-1
-       port: 9095
      - region: eu-west-1
        port: 9100
     relabel_configs:
      - source_labels: [__meta_ec2_tag_Environment]
-       regex: staging
-       action: keep
-     - source_labels: [__meta_ec2_tag_Hostname]
+       target_label: environment
+     - source_labels: [__meta_ec2_private_ip]
+       regex: '(.*)'
+       target_label: __address__
+       replacement: '${1}:9100'
+     - source_labels: [__meta_ec2_tag_Name]
+       regex: '(.*)'
        target_label: instance
+       replacement: '${1}:9100'
+     - source_labels: [__meta_ec2_instance_id]
+       target_label: instance_id
+     - source_labels: [__meta_ec2_tag_Environment]
+       target_label: environment
+     - source_labels: [__meta_ec2_tag_Platform]
+       target_label: platform
+     - source_labels: [__meta_ec2_tag_AkkaApplication]
+       target_label: akka_application
+     - source_labels: [__meta_ec2_tag_AkkaRole]
+       target_label: akka_role
+  - job_name: kamon
+    ec2_sd_configs:
+     - region: eu-west-1
+       port: 9095
+    relabel_configs:
+     - source_labels: [__meta_ec2_tag_Environment]
+       target_label: environment
+     - source_labels: [__meta_ec2_private_ip]
+       regex: '(.*)'
+       target_label: __address__
+       replacement: '${1}:9095'
+     - source_labels: [__meta_ec2_private_ip]
+       regex: '(.*)'
+       target_label: __address__
+       replacement: '${1}:9095'
+     - source_labels: [__meta_ec2_instance_id]
+       target_label: instance_id
+     - source_labels: [__meta_ec2_tag_Environment]
+       target_label: environment
+     - source_labels: [__meta_ec2_tag_Platform]
+       regex: akka # for kamon, we only want Akka instances
+       action: keep
+       target_label: platform
+     - source_labels: [__meta_ec2_tag_AkkaApplication]
+       target_label: akka_application
+     - source_labels: [__meta_ec2_tag_AkkaRole]
+       target_label: akka_role
