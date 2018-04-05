@@ -33,6 +33,7 @@ scrape_configs:
     ec2_sd_configs:
      - region: eu-west-1
        port: 9095
+    sample_limit: 5000
     relabel_configs:
      - source_labels: [__meta_ec2_tag_Environment]
        target_label: environment
